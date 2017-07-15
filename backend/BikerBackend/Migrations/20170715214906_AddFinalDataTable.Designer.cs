@@ -8,9 +8,10 @@ using BikerBackend.DAL;
 namespace BikerBackend.Migrations
 {
     [DbContext(typeof(BikerDbContext))]
-    partial class BikerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170715214906_AddFinalDataTable")]
+    partial class AddFinalDataTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
