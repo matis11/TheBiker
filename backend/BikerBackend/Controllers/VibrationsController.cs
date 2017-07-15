@@ -40,5 +40,27 @@ namespace BikerBackend.Controllers
             _dbContext.Add(data);
             _dbContext.SaveChanges();
         }
+
+        // POST api/values
+        [HttpPost("StartRoute")]
+        public int StartRoute([FromBody] Route data)
+        {
+            _dbContext.Add(data);
+            _dbContext.SaveChanges();
+            return data.RouteId;
+        }
+
+        // POST api/values
+        [HttpPost("EndRoute")]
+        public void EndRoute([FromBody] Route data)
+        {
+            var oldEntity = _dbContext.Routes.Where(r => r.RouteId == data.RouteId).FirstOrDefault();
+            oldEntity.EndLocationLatitude = data.EndLocationLatitude;
+            oldEntity.EndLocationLongitude = data.EndLocationLongitude;
+            oldEntity.EndTime = data.EndTime;
+            _dbContext.SaveChanges();
+          //Run Script
+        }
+
     }
 }
