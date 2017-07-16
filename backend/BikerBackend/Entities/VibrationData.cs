@@ -20,5 +20,6 @@ namespace BikerBackend.Entities
 
         public Route Route { get; set; }
         public int RouteId { get; set; }
+        public double Speed { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using BikerBackend.DAL;
 using BikerBackend.Entities;
+using BikerBackend.Data;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -37,6 +38,19 @@ namespace BikerBackend.Controllers
         [HttpPost]
         public void Post([FromBody] VibrationData data)
         {
+            var previousData = _dbContext.VibrationDatas.Where(vb => vb.RouteId == data.RouteId).OrderByDescending(vb => vb.TimeStamp).FirstOrDefault();
+            if(previousData == null)   
+            {
+                //First mesurement in route
+                var route = _dbContext.Routes.Where(r => r.RouteId == data.RouteId).FirstOrDefault();
+                var routeStart = new RouteStart { BeginTime = route.BeginTime, StartLocationLatitude = route.StartLocationLatitude, StartLocationLongitude = route.StartLocationLongitude };
+                SpeedCalculator.CalculateSpeed(routeStart, data);
+            }
+
+            else
+            {
+                SpeedCalculator.CalculateSpeed(previousData,data);
+            }
             _dbContext.Add(data);
             _dbContext.SaveChanges();
         }
@@ -62,6 +76,5 @@ namespace BikerBackend.Controllers
             _dbContext.SaveChanges();
           //Run Script
         }
-
     }
 }

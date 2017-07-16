@@ -8,9 +8,10 @@ using BikerBackend.DAL;
 namespace BikerBackend.Migrations
 {
     [DbContext(typeof(BikerDbContext))]
-    partial class BikerDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170716013949_Speed")]
+    partial class Speed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2")
@@ -45,7 +46,7 @@ namespace BikerBackend.Migrations
 
                     b.Property<double?>("EndLocationLongitude");
 
-                    b.Property<DateTime?>("EndTime");
+                    b.Property<DateTime>("EndTime");
 
                     b.Property<double>("StartLocationLatitude");
 
