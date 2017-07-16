@@ -24,7 +24,7 @@ namespace BikerBackend.Data
             data.Speed = speed;
         }
 
-        private static double CalculateDistance(double firstLong, double firstLat, double secondLong, double secondLat)
+        public static double CalculateDistance(double firstLong, double firstLat, double secondLong, double secondLat)
         {
             //Rough estimation
             var longitudeDiff = Math.Abs(secondLong - firstLong);

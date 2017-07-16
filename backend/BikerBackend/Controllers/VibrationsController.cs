@@ -74,7 +74,15 @@ namespace BikerBackend.Controllers
             oldRoute.EndLocationLongitude = route.EndLocationLongitude;
             oldRoute.EndTime = route.EndTime;
             _dbContext.SaveChanges();
-          //Run Script
+
+            var distortionData = _dbContext.VibrationDatas.Where(vd => vd.RouteId == route.RouteId).ToList();
+            var finalData = DistortionRatioCalculator.CalculateDistortion(distortionData);
+
+            foreach(var data in finalData)
+            {
+                _dbContext.Add(data);
+            }
+            _dbContext.SaveChanges();
         }
     }
 }
