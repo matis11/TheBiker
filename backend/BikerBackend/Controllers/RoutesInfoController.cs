@@ -40,7 +40,7 @@ namespace BikerBackend.Controllers
 
             foreach(var userRoute in userRoutes)
             {
-                var dataForRoute = _dbContext.VibrationDatas.Where(vd => vd.RouteId == userRoute.RouteId).ToList();
+                var dataForRoute = _dbContext.VibrationDatas.Where(vd => vd.RouteId == userRoute.RouteId).ToList().Distinct(comparer).ToList();
                 var minSpeed = 0.0;
                 var maxSpeed = 0.0;
                 var averageSpeed = 0.0;
@@ -90,7 +90,7 @@ namespace BikerBackend.Controllers
                     averageSpeed = speed;
                 }
                 
-                var result = new RouteInfo { Route = userRoute, Data = dataForRoute.Distinct(comparer),MaximumSpeed = maxSpeed, MinimumSpeed = minSpeed, AverageSpeed = averageSpeed, Distance = distance, Duration = duration };
+                var result = new RouteInfo { Route = userRoute, Data = dataForRoute,MaximumSpeed = maxSpeed, MinimumSpeed = minSpeed, AverageSpeed = averageSpeed, Distance = distance, Duration = duration };
                 resultList.Add(result);
             }
             return resultList;
