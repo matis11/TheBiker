@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">TheBiker</string>
+    <string name="permission_location">We need this permission to take photo from Your camera/storage</string>
+</resources>
