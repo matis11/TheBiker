@@ -34,6 +34,13 @@ namespace BikerBackend.Controllers
             return _dbContext.Routes.Where(r => r.RouteId == id).FirstOrDefault();
         }
 
+        [HttpGet("RoutesForUser/{id}")]
+        public IEnumerable<Route> GetRoutesForUser(int id)
+        {
+            return _dbContext.Routes.Where(r => r.UserId == id).ToList();
+        }
+
+
         // POST api/values
         [HttpPost]
         public void Post([FromBody]Route data)

@@ -43,21 +43,22 @@ namespace BikerBackend.Controllers
 
         // POST api/values
         [HttpPost("StartRoute")]
-        public int StartRoute([FromBody] Route data)
+        public int StartRoute([FromBody] RouteStart route)
         {
-            _dbContext.Add(data);
+            var newRoute = new Route {UserId = route.UserId, BeginTime = route.BeginTime, StartLocationLatitude = route.StartLocationLatitude, StartLocationLongitude = route.StartLocationLongitude };
+            _dbContext.Add(newRoute);
             _dbContext.SaveChanges();
-            return data.RouteId;
+            return newRoute.RouteId;
         }
 
         // POST api/values
         [HttpPost("EndRoute")]
-        public void EndRoute([FromBody] Route data)
+        public void EndRoute([FromBody] RouteEnd route)
         {
-            var oldEntity = _dbContext.Routes.Where(r => r.RouteId == data.RouteId).FirstOrDefault();
-            oldEntity.EndLocationLatitude = data.EndLocationLatitude;
-            oldEntity.EndLocationLongitude = data.EndLocationLongitude;
-            oldEntity.EndTime = data.EndTime;
+            var oldRoute = _dbContext.Routes.Where(r => r.RouteId == route.RouteId).FirstOrDefault();
+            oldRoute.EndLocationLatitude = route.EndLocationLatitude;
+            oldRoute.EndLocationLongitude = route.EndLocationLongitude;
+            oldRoute.EndTime = route.EndTime;
             _dbContext.SaveChanges();
           //Run Script
         }
