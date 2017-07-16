@@ -26,6 +26,7 @@ import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
+import rx.functions.Action1
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import rx.subscriptions.CompositeSubscription
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
     lateinit var sensorManager: SensorManager
     lateinit var sensor: Sensor
-    lateinit var gyroscopeSensor: Sensor
+    lateinit var rotationSensor: Sensor
     var accelerations = DoubleArray(5)
 
 
@@ -88,9 +89,10 @@ class MainActivity : AppCompatActivity() {
         sensorManager = getSystemService(Context.SENSOR_SERVICE) as (SensorManager)
 
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        gyroscopeSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
 
-        sensorManager.registerListener(AccelerationListener(), sensor, 5000000, 5000000)
+        sensorManager.registerListener(AccelerationListener(), sensor, 50000000, 50000000)
+        sensorManager.registerListener(RotationListener(), rotationSensor, SensorManager.SENSOR_DELAY_NORMAL)
 
         locationClient = LocationServices.getFusedLocationProviderClient(this)
         mSettingsClient = LocationServices.getSettingsClient(this)
@@ -113,7 +115,9 @@ class MainActivity : AppCompatActivity() {
                             ))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe()
+                            .subscribe({  }, {
+                                Log.d("Network Error", it.cause.toString())
+                            })
                 }
 
         )
@@ -216,13 +220,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    inner class GyroscopeListener : SensorEventListener {
+    inner class RotationListener : SensorEventListener {
         override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {}
 
-        override fun onSensorChanged(event: SensorEvent?)
-            
-        }
+        override fun onSensorChanged(event: SensorEvent) {
+            var rotationMatrix = FloatArray(16)
+            SensorManager.getRotationMatrixFromVector(
+                    rotationMatrix, event.values)
 
+            val remappedRotationMatrix = FloatArray(16)
+            SensorManager.remapCoordinateSystem(rotationMatrix,
+                    SensorManager.AXIS_X,
+                    SensorManager.AXIS_Z,
+                    remappedRotationMatrix)
+
+// Convert to orientations
+            val orientations = FloatArray(3)
+            SensorManager.getOrientation(remappedRotationMatrix, orientations)
+
+            for (i in 0..2) {
+                orientations[i] = Math.toDegrees(orientations[i].toDouble()).toFloat()
+            }
+
+            accXTextView.text = orientations[0].toString()
+            accYTextView.text = orientations[1].toString()
+            accZTextView.text = orientations[2].toString()
+
+        }
     }
 
     fun checkPermissions(activity: Activity, requestCode: Int,
@@ -258,6 +282,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
+        
         subscription.clear()
         super.onDestroy()
     }
