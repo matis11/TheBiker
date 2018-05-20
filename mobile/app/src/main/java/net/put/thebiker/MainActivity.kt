@@ -19,14 +19,11 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.View
 import com.google.android.gms.location.*
-import com.google.android.gms.tasks.OnSuccessListener
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
-import rx.functions.Action1
 import rx.schedulers.Schedulers
 import rx.subjects.PublishSubject
 import rx.subscriptions.CompositeSubscription
@@ -92,7 +89,7 @@ class MainActivity : AppCompatActivity() {
         rotationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
 
         sensorManager.registerListener(AccelerationListener(), sensor, 50000000, 50000000)
-        sensorManager.registerListener(RotationListener(), rotationSensor, SensorManager.SENSOR_DELAY_NORMAL)
+        sensorManager.registerListener(RotationListener(), rotationSensor, 50000000, 50000000)
 
         locationClient = LocationServices.getFusedLocationProviderClient(this)
         mSettingsClient = LocationServices.getSettingsClient(this)
@@ -115,7 +112,7 @@ class MainActivity : AppCompatActivity() {
                             ))
                             .subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe({  }, {
+                            .subscribe({ }, {
                                 Log.d("Network Error", it.cause.toString())
                             })
                 }
@@ -282,7 +279,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        
+
         subscription.clear()
         super.onDestroy()
     }
